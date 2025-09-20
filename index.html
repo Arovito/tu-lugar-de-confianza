@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tu lugar de confianza</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 400px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2b2d42;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+    textarea, select, button {
+      width: 100%;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #2b8a3e;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .success, .error {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Tu lugar de confianza</h2>
+    <form id="formulario">
+      <label for="mensaje">Tu mensaje:</label>
+      <textarea id="mensaje" rows="5" required></textarea>
+
+      <label for="importancia">Importancia:</label>
+      <select id="importancia">
+        <option value="Baja">Baja</option>
+        <option value="Media" selected>Media</option>
+        <option value="Alta">Alta</option>
+      </select>
+
+      <button type="submit">Enviar</button>
+    </form>
+    <div id="estado"></div>
+  </div>
+
+  <script>
+    document.getElementById("formulario").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const mensaje = document.getElementById("mensaje").value.trim();
+      const importancia = document.getElementById("importancia").value;
+      const estado = document.getElementById("estado");
+
+      if (mensaje.length < 5) {
+        estado.className = "error";
+        estado.innerText = "Escribe un mensaje más detallado.";
+        return;
+      }
+
+      fetch("https://script.google.com/macros/s/AKfycbxxsqgmYGSkO4SoAQNjAPfUzC2M6hQ-d-f1LBPiG2DRvrzVYQYyEM6iYYqgTHLWCFFH/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mensaje, importancia })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          estado.className = "success";
+          estado.innerText = "✅ Mensaje enviado con éxito.";
+          document.getElementById("formulario").reset();
+        } else {
+          estado.className = "error";
+          estado.innerText = "❌ Error al enviar el mensaje.";
+        }
+      })
+      .catch(() => {
+        estado.className = "error";
+        estado.innerText = "❌ No se pudo conectar con el servidor.";
+      });
+    });
+  </script>
+</body>
+</html>
